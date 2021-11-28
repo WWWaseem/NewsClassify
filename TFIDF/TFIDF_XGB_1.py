@@ -12,15 +12,14 @@ train_text = train['text']
 test_text = test['text']
 all_text = pd.concat([train_text, test_text])
 
-word_vectorizer = TfidfVectorizer(
-    sublinear_tf=True,
-    strip_accents='unicode',
-    analyzer='word',
-    token_pattern=r'\w{1,}',
-    stop_words='english',
-    ngram_range=(1, 1),
-    max_features=10000
-)
+word_vectorizer = TfidfVectorizer(analyzer='word',
+                                  ngram_range=(1, 2),  # (1,3)
+                                  min_df=3,  # 4  5
+                                  max_df=0.9,  # 0.95 1.0
+                                  use_idf=True,
+                                  max_features=3000,
+                                  smooth_idf=True,
+                                  sublinear_tf=True)
 
 word_vectorizer.fit(all_text)
 train_word_features = word_vectorizer.transform(train_text)
@@ -67,4 +66,4 @@ print('test f1_score:', f1_score(y_valid_, clf.predict(x_valid_), average='macro
 
 val_pred = clf.predict(X_test)
 dataframe = pd.DataFrame({'label': val_pred})
-dataframe.to_csv("TFIDF_XGB.csv", index=False, sep='\n')
+dataframe.to_csv("TFIDF_XGB_1.csv", index=False, sep='\n')
